@@ -90,6 +90,7 @@ return Alex;
     /* Enter your code here. Read input from STDIN. Print output to STDOUT */  
 int main()
 {
+    std::ios::sync_with_stdio(false);
     //
     int q=0;
     int Max=0;
