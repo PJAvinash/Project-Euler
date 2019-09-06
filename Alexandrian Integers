@@ -3,28 +3,27 @@
 #include <vector>
 #include <iostream>
 #include <algorithm>
+#include <bits/stdc++.h>
 using namespace std;
 
-void fill_div(int* a,int n)
+ int sum_div(int n)
 {
-    a[0]=1;
-    a[1]=2;
-    
-    for(int i=2;i<n;i++)
+    int count=1;
+    int i =1;
+    int number_of_divisers=0;
+    while(count<n)
     {
         int j =1;
-        int square = i*i +1;
-        int number_of_divisers=0;
+        long int square = i*i +1;
         if((i&1)==0)//i is even 
         {
             while(j<i)
             {
                 if (square%j==0){
-                number_of_divisers+=2;
+                number_of_divisers+=1;
                 }
                 j+=4;
             }
-            a[i]=number_of_divisers;
         }else{
              square = square>>1;
              int root = sqrt(square) ;
@@ -32,81 +31,60 @@ void fill_div(int* a,int n)
             {
                
                 if (square%j==0){
-                number_of_divisers+=4;
+                number_of_divisers+=2;
                 }
                 j+=4;
             }
-            if(root*root==square){number_of_divisers+=2;}
-            a[i] =number_of_divisers;
+            if(root*root==square){number_of_divisers+=1;}
         }
-      a[i]+= a[i-1];
+      count+= number_of_divisers;
+      i++;
+      number_of_divisers=0;
       
     }
+    return (--i);
 
 }
-int bin_search(int* a, int size,int key)
+vector<long int> populate(vector<long int> Alex,int T){
+    
+int end=0;
+Alex.push_back(6);
+for(int i =1;i<T;i++)
 {
-    int front =0;
-    int back = size-1;
-    int mid ; 
-   
-    while(front<= back)
-    {
-        mid = ((front+back)>>1);
-        if(a[mid]==key)
-        {
-           return mid;
-        }else if(a[mid]<key)
-        {
-         front = mid +1;
-        }else{
-            back = mid-1;
-        }
-        
-    }
-    return mid;
-}
-long int alex(int n,int* div,int size)
-{
-    int a= bin_search(div,size,n);
-    int sq = a*a+1;
-    if(div[a]==n)
-    {
-        int k = ((a>>2)<<2)+1;
-        if((sq&1)==1){
-        while(sq%k!=0)
-        {
-         k-=4;
-        }
-        return (a*(a+k)*(a+sq/k));
-        }else{
-            while(sq%k!=0||sq%(k+1)!=0)
-            {
-                k-=4;
-            }
-            if(sq%k==0)
-            {
-                return(a*(a+k)*(a+sq/k));
-            }else{
-                return (a*(a+k+1)*(a+sq/(k+1)));
-            }
-        }
-        
-    }else {
-        sq = sq+ (a<<1)+1;
-        int dif = n- div[a];
-        int k =0;
-        while(dif)
-        {
-            k++;
-         if (sq%k==0)
+    long int sq = i*i+1;
+    int j=1;
+    int k =2;
+    
+    if((i&1)==0){
+     while(j<i){
+         if(sq%j==0)
          {
-             dif--;
+             Alex.push_back((i)*(i+j)*(i+sq/j));
+             
          }
-        }
-        return (a+1)*(a+k+1)*(a+1+sq/k);
+         j+=4;
+     }}
+     else{
+         while(j<i)
+         {
+          if(sq%j==0)
+         {
+             Alex.push_back((i)*(i+j)*(i+sq/j));
+         }
+         j+=4;
+         if(sq%k==0 & k<i)
+         {
+             Alex.push_back((i)*(i+k)*(i+sq/k));
+         }
+         k+=4;
+         }
+     }
     }
-}
+sort(Alex.begin(), Alex.end()); 
+return Alex;
+} 
+
+
 
 
     /* Enter your code here. Read input from STDIN. Print output to STDOUT */  
@@ -122,19 +100,18 @@ int main()
       scanf("%d",a+i);
       Max = max(Max,a[i]);
     }
-    int div[Max+1];//div[i] = sum(no.of divisors of t^2+1;for 1<=t<=i)
-    fill_div(div,Max+1);
-    //for(int i=0;i<q;i++)
-    {
-     //printf("%ld\n",alex(a[q],div,Max+1));
-    }//
+    int t = sum_div(Max+1);//div[i] = sum(no.of divisors of t^2+1;for 1<=t<=i)
+    vector<long int> Alex;
+    t = pow(t+1,4/3);
+    Alex = populate(Alex,t);
+   
+    for(int i=0;i<q;i++) {
+        
+        printf("%ld\n",Alex[a[i]-1]);
+        
+    }     
+    return 0;
+        
 
-    for(int i=0;i<Max+1;i++)
-    {
-        printf("%d ",div[i]);
-    }/*
-    printf("%d",bin_search(div,Max+1,1000));*/
-    //printf("%d",alex(3,div,7));
-
-  return 0;   
+     
 }
