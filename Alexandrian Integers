@@ -1,0 +1,137 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+void fill_div(int* a,int n)
+{
+    a[0]=1;
+    a[1]=2;
+    
+    for(int i=2;i<n;i++)
+    {
+        int j =1;
+        int square = i*i +1;
+        int number_of_divisers=0;
+        if((i&1)==0)//i is even 
+        {
+            while(j<i)
+            {
+                if (square%j==0){
+                number_of_divisers+=2;
+                }
+                j+=4;
+            }
+            a[i]=number_of_divisers;
+        }else{
+            while(j<i)
+            {
+                
+                if (square%j==0){
+                number_of_divisers+=4;
+                }
+                j+=4;
+            }
+            a[i] =number_of_divisers;
+        }
+      a[i]+= a[i-1];
+      
+    }
+
+}
+int bin_search(int* a, int size,int key)
+{
+    int front =0;
+    int back = size-1;
+    int mid ; 
+   
+    while(front<= back)
+    {
+        mid = ((front+back)>>1);
+        if(a[mid]==key)
+        {
+           return mid;
+        }else if(a[mid]<key)
+        {
+         front = mid +1;
+        }else{
+            back = mid-1;
+        }
+        
+    }
+    return mid;
+}
+long int alex(int n,int* div,int size)
+{
+    int a= bin_search(div,size,n);
+    int sq = a*a+1;
+    if(div[a]==n)
+    {
+        int k = ((a>>2)<<2)+1;
+        if((sq&1)==1){
+        while(sq%k!=0)
+        {
+         k-=4;
+        }
+        return (a*(a+k)*(a+sq/k));
+        }else{
+            while(sq%k!=0||sq%(k+1)!=0)
+            {
+                k-=4;
+            }
+            if(sq%k==0)
+            {
+                return(a*(a+k)*(a+sq/k));
+            }else{
+                return (a*(a+k+1)*(a+sq/(k+1)));
+            }
+        }
+        
+    }else {
+        sq = sq+ (a<<1)+1;
+        int dif = n- div[a];
+        int k =0;
+        while(dif)
+        {
+            k++;
+         if (sq%k==0)
+         {
+             dif--;
+         }
+        }
+        return (a+1)*(a+k+1)*(a+1+sq/k);
+    }
+}
+
+
+    /* Enter your code here. Read input from STDIN. Print output to STDOUT */  
+int main()
+{
+    //
+    int q=0;
+    int Max=0;
+    scanf("%d",&q);
+    int a[q];
+    for(int i =0;i<q;i++)
+    {
+      scanf("%d",a+i);
+      Max = max(Max,a[i]);
+    }
+    int div[Max+1];//div[i] = sum(no.of divisors of t^2+1;for 1<=t<=i)
+    fill_div(div,Max+1);
+    //for(int i=0;i<q;i++)
+    {
+     //printf("%ld\n",alex(a[q],div,Max+1));
+    }//
+
+    for(int i=0;i<Max+1;i++)
+    {
+        printf("%d ",div[i]);
+    }/*
+    printf("%d",bin_search(div,Max+1,1000));*/
+    //printf("%d",alex(3,div,7));
+
+  return 0;   
+}
