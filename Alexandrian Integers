@@ -26,14 +26,17 @@ void fill_div(int* a,int n)
             }
             a[i]=number_of_divisers;
         }else{
-            while(j<i)
+             square = square>>1;
+             int root = sqrt(square) ;
+            while(j<root)
             {
-                
+               
                 if (square%j==0){
                 number_of_divisers+=4;
                 }
                 j+=4;
             }
+            if(root*root==square){number_of_divisers+=2;}
             a[i] =number_of_divisers;
         }
       a[i]+= a[i-1];
