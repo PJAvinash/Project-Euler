@@ -1,10 +1,53 @@
+
 #include <cmath>
-#include <cstdio>
+
 #include <vector>
 #include <iostream>
 #include <algorithm>
 using namespace std;
 
+vector<int> div(int n)
+{
+    vector<int> a ;
+    a.push_back(1);
+    int root = sqrt(n/2)+1;
+    for(int i =1;i<root;i++)
+    {
+        for(int j=i+1;(i*i+j*j)<n;j++)
+        {
+            a.push_back(i*i+j*j);
+        }
+
+    }
+    for(int i =0;2*((i<<2)+1)*((i<<2)+1)<n;i++)
+    {
+       a.push_back(2*((i<<2)+1)*((i<<2)+1));
+    }
+    sort(a.begin(),a.end());
+    return a;
+}
+int bin_search(vector<int> a,int key)
+{
+    int front =0;
+    int back = a.size()-1;
+    int mid ; 
+
+    while(front<= back)
+    {
+        mid = ((front+back)>>1);
+        if(a[mid]==key)
+        {
+           return mid;
+        }else if(a[mid]<key)
+        {
+         front = mid +1;
+        }else{
+            back = mid-1;
+        }
+
+    }
+    return back;
+}
  int sum_div(int n)
 {
     //return int(n/log10(n));// not accurate but returns pretty good approximation
@@ -46,67 +89,47 @@ using namespace std;
 
 }
 
-vector<long int > insertionSort(vector<long int > a)  
-{  
-    int n = a.size();
-    int i, key, j;  
-    for (i = 1; i < n; i++) 
-    {  
-        key = a[i];  
-        j = i - 1;  
-        while (j >= 0 && a[j] > key) 
-        {  
-            a[j + 1] = a[j];  
-            j = j - 1;  
-        }  
-        a[j + 1] = key;  
-    } 
-    return a ; 
-}
 
-vector< long int> populate(vector< long int> Alex,int T){
+vector<long long int> populate(vector< long long int> Alex,int T){
     
 int end=0;
-Alex.push_back(6);
-for(int i =1;i<T;i++)
+vector<int> divisors=div(T);
+int div_size = divisors.size();
+vector<int> Min(T+1);
+Min[0] =1;
+for(int i =1;i<T+1;i++)
+{
+    Min[i]= 1;
+    Alex.push_back(i*(i+1)*(i*(i+1)+1));
+}
+for(int i =1;i<T+1;i++)
 {
     long int sq = i*i+1;
-    int j=1;
-    int k =2;
-    
-    while(j<i)
-         {
-          if(sq%j==0)
-         {
-             Alex.push_back((i)*((sq<<1)-1+i*(j+sq/j)));
-         }
-         j+=4;
-         }
-    while(k<i){
-         if(sq%k==0 )
-         {
-             Alex.push_back((i)*((sq<<1)-1+i*(k+sq/k)));
-         }
-         k+=4;
-         }
-         j=1;
-         sq+=(i<<1)+1;
-         i++;
-         /*******************************************/
-         while(j<i){
-         if(sq%j==0)
-         {
-             Alex.push_back((i)*((sq<<1)-1+i*(j+sq/j)));
-             
-         }
-         j+=4;
-     }
+    int j = bin_search(divisors,Min[i])+1;
+    while((divisors[j]<i))
+    {
+    if(sq%divisors[j]==0)
+    {
+        for(int k=i;k<T+1;k+=divisors[j])
+        {
+         long int sq_k = k*k+1;
+         Alex.push_back((k)*((sq_k<<1)-1+k*(divisors[j]+sq_k/divisors[j])));
+         Min[k] = max(Min[k],divisors[j]);
+        }
+    }
+     j++;
+     if(j>=div_size){break;}
 
     }
+    
+
+
+}
 sort(Alex.begin(), Alex.end()); 
 //Alex = insertionSort(Alex);
 return Alex;
-} 
+
+    }
 
 
 
@@ -125,18 +148,20 @@ int main()
       scanf("%d",a+i);
       Max = max(Max,a[i]);
     }
-    int t = sum_div(Max+1);//div[i] = sum(no.of divisors of t^2+1;for 1<=t<=i)
-    vector<long int> Alex;
-    t = pow(t+1,4.0/3);
+    int t = sum_div(Max+1);//t = sum_div(Max+1)===(Max+1)/log10(Max+1) approx
+    //div[i] = sum(no.of divisors of t^2+1;for 1<=t<=i)
+    vector<long long int> Alex;
+    t = pow((t+1)/sqrt(2),4.0/3);
+    //cout<<t<<" is T"<<endl;
     Alex = populate(Alex,t);
-   
     for(int i=0;i<q;i++) {
+        printf("%lld\n",Alex[(a[i]-1)]);
         
-        printf("%ld\n",Alex[a[i]-1]);
-        
-    } 
-    return 0;
+    }
+   return 0;
         
 
      
 }
+
+
