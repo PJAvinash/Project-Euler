@@ -91,8 +91,6 @@ int bin_search(vector<int> a,int key)
 
 
 vector<long long int> populate(vector< long long int> Alex,int T){
-    
-int end=0;
 vector<int> divisors=div(T);
 int div_size = divisors.size();
 vector<int> Min(T+1);
